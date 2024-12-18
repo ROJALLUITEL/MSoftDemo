@@ -117,19 +117,4 @@ class BillController extends Controller
         return redirect (route('bill.index'))->with('success' ,'bill deleted successfully');
     }
 
-    public function calculateTotal(Request $request)
-    {
-        $request->validate([
-            'price' => 'required|numeric|min:0',
-            'discount' => 'required|numeric|min:0|max:100',
-        ]);
-
-        $price = $request->input('price');
-        $discount = $request->input('discount');
-
-        $total = $price - ($price * ($discount / 100));
-
-        return redirect()->route('discount.form')->with('total', $total);
-    }
-
 }
