@@ -38,19 +38,15 @@ class BillController extends Controller
      */
     public function store(StoreBillRequest $request)
     {
-        $price = $request->input('price');
-        $discount = $request->input('discount');
-        $total = $price - ($price * ($discount / 100));
-
         Bill::create([
             'company_name' => $request->input('company_name'),
             'customer_name' => $request->input('customer_name'),
             'location' => $request->input('location'),
             'contact' => $request->input('contact'),
             'items' => $request->input('items'),
-            'price' => $price,
-            'discount' => $discount,
-            'total' => $total,
+            'price' =>  $request->input('price'),
+            'discount' => $request->input('discount'),
+            'total' => $request->input('total')
         ]);
 
         return redirect()->route('bill.index')->with('success', 'Bill added successfully!');

@@ -123,6 +123,21 @@
             </table>
         </form>
     </div>
+
+    <script>
+        function calculateTotal() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+            const total = price - (price * discount / 100);
+
+            document.getElementById('total').value = total.toFixed(2);
+        }
+
+        // Add event listeners to update total when price or discount changes
+        document.getElementById('price').addEventListener('input', calculateTotal);
+        document.getElementById('discount').addEventListener('input', calculateTotal);
+    </script>
 </body>
 
 </html>

@@ -82,6 +82,7 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
+        }
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -146,6 +147,18 @@
             </table>
         </form>
     </div>
+    <script>
+        function calculateTotal() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+            const total = price - (price * discount / 100);
+
+            document.getElementById('total').value = total.toFixed(2);
+        }
+        document.getElementById('price').addEventListener('input', calculateTotal);
+        document.getElementById('discount').addEventListener('input', calculateTotal);
+    </script>
 </body>
 
 </html>
