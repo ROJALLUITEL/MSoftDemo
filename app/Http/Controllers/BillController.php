@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBillRequest;
+use App\Http\Requests\UpdateBillRequest;
 use App\Models\Bill;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 
 class BillController extends Controller
 {
@@ -14,8 +17,8 @@ class BillController extends Controller
      */
     public function index()
     {
-        $bills=Bill::all();
-        return view('bill.index',['bills'=>$bills]);
+        $bills = Bill::all();
+        return view('bill.index', ['bills' => $bills]);
     }
 
     /**
@@ -33,29 +36,26 @@ class BillController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-        public function store(Request $request)
-        {
-            $request->validate([
-                'price' => 'required|numeric|min:0',
-                'discount' => 'required|numeric|min:0|max:100',
-            ]);
-            $price = $request->input('price');
-            $discount = $request->input('discount');
-        
-            $total = $price - ($price * ($discount / 100));
-            Bill::create([
-                'company_name' => $request->input('company_name'),
-                'customer_name' => $request->input('customer_name'),
-                'location' => $request->input('location'),
-                'contact' => $request->input('contact'),
-                'items' => $request->input('items'),
-                'price' => $price,
-                'discount' => $discount,
-                'total' => $total,  
-            ]);
-            return redirect()->route('bill.index')->with('success', 'Bill added successfully!');
-        }
-        
+    public function store(StoreBillRequest $request)
+    {
+        $price = $request->input('price');
+        $discount = $request->input('discount');
+        $total = $price - ($price * ($discount / 100));
+
+        Bill::create([
+            'company_name' => $request->input('company_name'),
+            'customer_name' => $request->input('customer_name'),
+            'location' => $request->input('location'),
+            'contact' => $request->input('contact'),
+            'items' => $request->input('items'),
+            'price' => $price,
+            'discount' => $discount,
+            'total' => $total,
+        ]);
+
+        return redirect()->route('bill.index')->with('success', 'Bill added successfully!');
+    }
+
 
     /**
      * Display the specified resource.
@@ -76,8 +76,7 @@ class BillController extends Controller
      */
     public function edit(Bill $bill)
     {
-        return view('bill.edit',['bill'=>$bill]);
-        
+        return view('bill.edit', ['bill' => $bill]);
     }
 
     /**
@@ -87,22 +86,11 @@ class BillController extends Controller
      * @param  \App\Models\Bill  $bill
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Bill $bill)
+    public function update(UpdateBillRequest $request, Bill $bill)
     {
-        $data = $request->validate([
-            'company_name'=> 'required',
-            'customer_name'=> 'required',
-            'location' => 'required',
-            'contact' => 'required',
-            'items' => 'required',
-            'price' => 'required',
-            'discount' => 'required',
-            'total' => 'required'
-
-          ]);
-          $bill ->update($data);
-          return redirect (route('bill.index'))->with('success' ,'bill updated successfully');
-    
+        $data = $request->validated();
+        $bill->update($data);
+        return redirect(route('bill.index'))->with('success', 'Bill updated successfully');
     }
 
     /**
@@ -114,7 +102,13 @@ class BillController extends Controller
     public function destroy(Bill $bill)
     {
         $bill->delete();
-        return redirect (route('bill.index'))->with('success' ,'bill deleted successfully');
+        return redirect(route('bill.index'))->with('success', 'bill deleted successfully');
     }
 
+    public function downloadPDF($id)
+    {
+        $bill = Bill::findOrFail($id);
+        $pdf = FacadePdf::loadView('bill.pdf', compact('bill'));
+        return $pdf->download('bill_' . $bill->id . '.pdf');
+    }
 }

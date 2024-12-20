@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use  App\Http\Controllers\BillController;
-use  App\Http\Controllers\DiscountController;
 use  App\Models\Bill;
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +14,7 @@ use  App\Models\Bill;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',[BillController::class, 'index'])->name('bill.index');
 
 // Route::get('/bill', [BillController::class, 'index'])->name('bill.index');
 // Route::get('/bill/create', [BillController::class, 'create'])->name('bill.create');
@@ -27,3 +24,4 @@ Route::get('/', function () {
 // Route::delete('/bill/{bill}/destroy', [BillController::class, 'destroy'])->name('bill.destroy');
 
 Route::resource('bill', BillController::class);
+Route::get('/bill/{id}/download', [BillController::class, 'downloadPDF'])->name('bill.download');
